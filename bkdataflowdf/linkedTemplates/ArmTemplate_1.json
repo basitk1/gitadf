@@ -13,6 +13,37 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/mergedflow')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "WranglingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"name": "salesjoinleft",
+							"script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> salesjoinleft",
+							"dataset": {
+								"referenceName": "salesjoinleft",
+								"type": "DatasetReference"
+							}
+						},
+						{
+							"name": "customerjoinright",
+							"script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> customerjoinright",
+							"dataset": {
+								"referenceName": "customerjoinright",
+								"type": "DatasetReference"
+							}
+						}
+					],
+					"sinks": [],
+					"script": "section Section1;\r\nshared salesjoinleft = let\r\n  AdfDoc = AzureStorage.BlobContents(\"https://bkdfstorage.blob.core.windows.net/input/Sales_Join_left.csv\"),\r\n  Csv = Csv.Document(AdfDoc, [Delimiter = \",\", Encoding = TextEncoding.Utf8, QuoteStyle = QuoteStyle.Csv]),\r\n  PromotedHeaders = Table.PromoteHeaders(Csv, [PromoteAllScalars = true])\r\nin\r\n  PromotedHeaders;\r\nshared customerjoinright = let\r\n  AdfDoc = AzureStorage.BlobContents(\"https://bkdfstorage.blob.core.windows.net/input/customer_join_right.csv\"),\r\n  Csv = Csv.Document(AdfDoc, [Delimiter = \",\", Encoding = TextEncoding.Utf8, QuoteStyle = QuoteStyle.Csv]),\r\n  PromotedHeaders = Table.PromoteHeaders(Csv, [PromoteAllScalars = true])\r\nin\r\n  PromotedHeaders;\r\nshared UserQuery = let\r\n  Source = salesjoinleft,\r\n  #\"Merged queries\" = Table.NestedJoin(Source, {\"Cust_id\"}, customerjoinright, {\"Cust_id\"}, \"customerjoinright\", JoinKind.FullOuter),\r\n  #\"Expanded customerjoinright\" = Table.ExpandTableColumn(#\"Merged queries\", \"customerjoinright\", {\"Name\", \"Age\", \"Sex\"}, {\"customerjoinright.Name\", \"customerjoinright.Age\", \"customerjoinright.Sex\"}),\r\n  #\"Renamed columns\" = Table.RenameColumns(#\"Expanded customerjoinright\", {{\"customerjoinright.Name\", \"Customer_Name\"}, {\"customerjoinright.Age\", \"Customer_Age\"}, {\"customerjoinright.Sex\", \"Customer_sex\"}})\r\nin\r\n  #\"Renamed columns\";\r\n"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/wrang1')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -84,7 +115,9 @@
 				"annotations": [],
 				"lastPublishTime": "2021-02-16T02:03:46Z"
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/mergedflow')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/execute agg dflow')]",
