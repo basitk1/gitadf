@@ -1,0 +1,1206 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "bkdataflowdf"
+		},
+		"AzureBlobStorage_LS_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage_LS'"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/copydata')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data input to results",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "DS_input",
+								"type": "DatasetReference",
+								"parameters": {
+									"inputfilename": "File_1_para.csv"
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "DS_Output",
+								"type": "DatasetReference",
+								"parameters": {
+									"outputfilename": "File_1_para.csv"
+								}
+							}
+						]
+					},
+					{
+						"name": "Copy data input to results_copy1",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Copy data input to results",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "DS_input",
+								"type": "DatasetReference",
+								"parameters": {
+									"inputfilename": "File_2_para.csv"
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "DS_Output",
+								"type": "DatasetReference",
+								"parameters": {
+									"outputfilename": "File_2_para.csv"
+								}
+							}
+						]
+					}
+				],
+				"annotations": [],
+				"lastPublishTime": "2021-02-16T02:47:47Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DS_input')]",
+				"[concat(variables('factoryId'), '/datasets/DS_Output')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/copydata_copy1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data input to results",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "DS_input",
+								"type": "DatasetReference",
+								"parameters": {
+									"inputfilename": {
+										"value": "@pipeline().parameters.inputfilename",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "DS_Output",
+								"type": "DatasetReference",
+								"parameters": {
+									"outputfilename": {
+										"value": "@pipeline().parameters.outputfilename",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					}
+				],
+				"parameters": {
+					"inputfilename": {
+						"type": "string"
+					},
+					"outputfilename": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"lastPublishTime": "2021-02-16T02:47:47Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DS_input')]",
+				"[concat(variables('factoryId'), '/datasets/DS_Output')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/demowrang1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "wrang1",
+						"type": "ExecuteWranglingDataflow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "mergedflow",
+								"type": "DataFlowReference",
+								"datasetParameters": {
+									"salesjoinleft": {},
+									"customerjoinright": {},
+									"Sinkoutputsink_DS": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"sinks": {
+								"UserQuery": {
+									"name": "Sinkoutputsink_DS",
+									"dataset": {
+										"referenceName": "outputsink_DS",
+										"type": "DatasetReference"
+									},
+									"script": "sink(input(\n\t\tId as string,\n\t\tSales as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['wrang1.csv'],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Sinkoutputsink_DS"
+								}
+							}
+						}
+					}
+				],
+				"annotations": [],
+				"lastPublishTime": "2021-02-16T02:03:46Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/mergedflow')]",
+				"[concat(variables('factoryId'), '/datasets/outputsink_DS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/execute agg dflow')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "agg_csv_copy1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "agg_csv_copy1",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"sourcecsv": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"annotations": [],
+				"lastPublishTime": "2021-02-15T18:20:39Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/agg_csv_copy1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/executecopydflow')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "lefttransfdflow",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"sourcesales": {},
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"annotations": [],
+				"lastPublishTime": "2021-02-15T18:20:41Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/lefttransfdflow')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/executepipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Execute Pipeline1",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "copydata_copy1",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"inputfilename": "Sales_Derive.csv",
+								"outputfilename": "Sales_Derive_out.csv"
+							}
+						}
+					}
+				],
+				"annotations": [],
+				"lastPublishTime": "2021-02-16T03:05:41Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/copydata_copy1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/github1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Wait1",
+						"type": "Wait",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"waitTimeInSeconds": 4
+						}
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_Output')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStorage_LS",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"outputfilename": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@dataset().outputfilename",
+							"type": "Expression"
+						},
+						"container": "results"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage_LS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_input')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStorage_LS",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"inputfilename": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@dataset().inputfilename",
+							"type": "Expression"
+						},
+						"container": "input"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Row",
+						"type": "String"
+					},
+					{
+						"name": "Country",
+						"type": "String"
+					},
+					{
+						"name": "Sales",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage_LS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/customerjoinright')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStorage_LS",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "customer_join_right.csv",
+						"container": "input"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Cust_id",
+						"type": "String"
+					},
+					{
+						"name": "Country",
+						"type": "String"
+					},
+					{
+						"name": "Name",
+						"type": "String"
+					},
+					{
+						"name": "Age",
+						"type": "String"
+					},
+					{
+						"name": "Sex",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage_LS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/input')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStorage_LS",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "Sales_Derive.csv",
+						"container": "input"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Country",
+						"type": "String"
+					},
+					{
+						"name": "Year",
+						"type": "String"
+					},
+					{
+						"name": "Product_Type",
+						"type": "String"
+					},
+					{
+						"name": "Sales",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage_LS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/outputsink_DS')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStorage_LS",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"container": "results"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Id",
+						"type": "String"
+					},
+					{
+						"name": "Sales",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage_LS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/salesjoinleft')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStorage_LS",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "Sales_Join_left.csv",
+						"container": "input"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Row",
+						"type": "String"
+					},
+					{
+						"name": "Country",
+						"type": "String"
+					},
+					{
+						"name": "Year",
+						"type": "String"
+					},
+					{
+						"name": "Sales",
+						"type": "String"
+					},
+					{
+						"name": "Cust_id",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage_LS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/source_sales_csv')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStorage_LS",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "Sales_File_2014_2019_USA_UK_IND.csv",
+						"container": "input"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage_LS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureBlobStorage_LS')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('AzureBlobStorage_LS_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/agg_csv_copy1')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "input",
+								"type": "DatasetReference"
+							},
+							"name": "sourcecsv"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "outputsink_DS",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "Aggregateresults"
+						}
+					],
+					"script": "source(output(\n\t\tCountry as string,\n\t\tYear as string,\n\t\tProduct_Type as string,\n\t\tSales as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> sourcecsv\nsourcecsv aggregate(groupBy(Country),\n\t{Total Sales} = sum(toInteger(Sales)),\n\t\t{Max Sales} = max(toInteger(Sales)),\n\t\t{Min Sales} = min(toInteger(Sales))) ~> Aggregateresults\nAggregateresults sink(input(\n\t\tId as string,\n\t\tSales as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['aggregate sales.csv'],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/input')]",
+				"[concat(variables('factoryId'), '/datasets/outputsink_DS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/clonetranf')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "input",
+								"type": "DatasetReference"
+							},
+							"name": "sourcesalses"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "outputsink_DS",
+								"type": "DatasetReference"
+							},
+							"name": "sinkderived"
+						},
+						{
+							"dataset": {
+								"referenceName": "outputsink_DS",
+								"type": "DatasetReference"
+							},
+							"name": "sinksalessort"
+						}
+					],
+					"transformations": [
+						{
+							"name": "DerivedColumnsales"
+						},
+						{
+							"name": "Sort1"
+						},
+						{
+							"name": "Sort2"
+						},
+						{
+							"name": "Selectsales"
+						}
+					],
+					"script": "source(output(\n\t\tCountry as string,\n\t\tYear as string,\n\t\tProduct_Type as string,\n\t\tSales as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tpartitionBy('hash', 1)) ~> sourcesalses\nsourcesalses derive(year = toInteger(trim(right(Country,6),'()')),\n\t\tCountry = toString(left(Country,length(Country)-6))) ~> DerivedColumnsales\nSelectsales sort(asc(Country, true)) ~> Sort1\nDerivedColumnsales sort(asc(Sales, true)) ~> Sort2\nDerivedColumnsales select(mapColumn(\n\t\tyear = DerivedColumnsales@year,\n\t\tCountry,\n\t\t{year of sales} = Sales\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Selectsales\nSort1 sink(input(\n\t\tId as string,\n\t\tSales as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['selectsortbycountry.csv'],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sinkderived\nSort2 sink(input(\n\t\tId as string,\n\t\tSales as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['sortbysales'],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sinksalessort"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/input')]",
+				"[concat(variables('factoryId'), '/datasets/outputsink_DS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/conditionalsplitdflow')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "input",
+								"type": "DatasetReference"
+							},
+							"name": "sourcecsplit"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "outputsink_DS",
+								"type": "DatasetReference"
+							},
+							"name": "sinkusuk"
+						},
+						{
+							"dataset": {
+								"referenceName": "outputsink_DS",
+								"type": "DatasetReference"
+							},
+							"name": "sinkusind"
+						},
+						{
+							"dataset": {
+								"referenceName": "outputsink_DS",
+								"type": "DatasetReference"
+							},
+							"name": "sinkdefault"
+						}
+					],
+					"transformations": [
+						{
+							"name": "ConditionalSplitcountry"
+						}
+					],
+					"script": "source(output(\n\t\tCountry as string,\n\t\tYear as string,\n\t\tProduct_Type as string,\n\t\tSales as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> sourcecsplit\nsourcecsplit split(Country=='USA' || Country=='UK',\n\tCountry=='USA'||Country=='IND',\n\tdisjoint: true) ~> ConditionalSplitcountry@(USAUK, USAIND, default)\nConditionalSplitcountry@USAUK sink(input(\n\t\tId as string,\n\t\tSales as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['usuk.csv'],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sinkusuk\nConditionalSplitcountry@USAIND sink(input(\n\t\tId as string,\n\t\tSales as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['usind.csv'],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sinkusind\nConditionalSplitcountry@default sink(input(\n\t\tId as string,\n\t\tSales as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['default.csv'],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sinkdefault"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/input')]",
+				"[concat(variables('factoryId'), '/datasets/outputsink_DS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/copy csv')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "source_sales_csv",
+								"type": "DatasetReference"
+							},
+							"name": "sourcecsv"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "outputsink_DS",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [],
+					"script": "source(output(\n\t\tColumn_1 as string,\n\t\tColumn_2 as string,\n\t\tColumn_3 as string,\n\t\tColumn_4 as string,\n\t\tColumn_5 as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> sourcecsv\nsourcecsv sink(input(\n\t\tId as string,\n\t\tSales as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['customer result.csv'],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/source_sales_csv')]",
+				"[concat(variables('factoryId'), '/datasets/outputsink_DS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/deriveddflow')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "input",
+								"type": "DatasetReference"
+							},
+							"name": "sourcesalses"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "outputsink_DS",
+								"type": "DatasetReference"
+							},
+							"name": "sinkderived"
+						},
+						{
+							"dataset": {
+								"referenceName": "outputsink_DS",
+								"type": "DatasetReference"
+							},
+							"name": "sinksalessort"
+						}
+					],
+					"transformations": [
+						{
+							"name": "DerivedColumnsales"
+						},
+						{
+							"name": "Sort1"
+						},
+						{
+							"name": "Sort2"
+						}
+					],
+					"script": "source(output(\n\t\tCountry as string,\n\t\tYear as string,\n\t\tProduct_Type as string,\n\t\tSales as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tpartitionBy('hash', 1)) ~> sourcesalses\nsourcesalses derive(year = toInteger(trim(right(Country,6),'()')),\n\t\tCountry = toString(left(Country,length(Country)-6))) ~> DerivedColumnsales\nDerivedColumnsales sort(asc(Country, true)) ~> Sort1\nDerivedColumnsales sort(asc(Sales, true)) ~> Sort2\nSort1 sink(input(\n\t\tId as string,\n\t\tSales as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['sortbycountry.csv'],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sinkderived\nSort2 sink(input(\n\t\tId as string,\n\t\tSales as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['sortbysales'],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sinksalessort"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/input')]",
+				"[concat(variables('factoryId'), '/datasets/outputsink_DS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/exittranfdflow')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "salesjoinleft",
+								"type": "DatasetReference"
+							},
+							"name": "sourceexist"
+						},
+						{
+							"dataset": {
+								"referenceName": "customerjoinright",
+								"type": "DatasetReference"
+							},
+							"name": "sourcerightcust"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "outputsink_DS",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "Exists1"
+						}
+					],
+					"script": "source(output(\n\t\tRow as string,\n\t\tCountry as string,\n\t\tYear as string,\n\t\tSales as string,\n\t\tCust_id as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> sourceexist\nsource(output(\n\t\tCust_id as string,\n\t\tCountry as string,\n\t\tName as string,\n\t\tAge as string,\n\t\tSex as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> sourcerightcust\nsourceexist, sourcerightcust exists(sourceexist@Cust_id == sourcerightcust@Cust_id,\n\tnegate:true,\n\tbroadcast: 'auto')~> Exists1\nExists1 sink(input(\n\t\tId as string,\n\t\tSales as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['exists.csv'],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/salesjoinleft')]",
+				"[concat(variables('factoryId'), '/datasets/customerjoinright')]",
+				"[concat(variables('factoryId'), '/datasets/outputsink_DS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/filterdflow')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "input",
+								"type": "DatasetReference"
+							},
+							"name": "sourcecsv"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "outputsink_DS",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "Filtersalesyear"
+						}
+					],
+					"script": "source(output(\n\t\tCountry as string,\n\t\tYear as integer,\n\t\tProduct_Type as string,\n\t\tSales as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> sourcecsv\nsourcecsv filter(Year==2017) ~> Filtersalesyear\nFiltersalesyear sink(input(\n\t\tId as string,\n\t\tSales as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['customer result.csv'],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/input')]",
+				"[concat(variables('factoryId'), '/datasets/outputsink_DS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/lefttransfdflow')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "salesjoinleft",
+								"type": "DatasetReference"
+							},
+							"name": "sourcesales"
+						},
+						{
+							"dataset": {
+								"referenceName": "customerjoinright",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "outputsink_DS",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "Joindata"
+						},
+						{
+							"name": "Select1"
+						}
+					],
+					"script": "source(output(\n\t\tRow as string,\n\t\tCountry as string,\n\t\tYear as integer,\n\t\tSales as integer,\n\t\tCust_id as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> sourcesales\nsource(output(\n\t\tCust_id as string,\n\t\tCountry as string,\n\t\tName as string,\n\t\tAge as integer,\n\t\tSex as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> source1\nsourcesales, source1 join(sourcesales@Cust_id == source1@Cust_id,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> Joindata\nJoindata select(mapColumn(\n\t\tCust_id = source1@Cust_id,\n\t\tName,\n\t\tCountry = sourcesales@Country,\n\t\tYear,\n\t\tSales,\n\t\tAge,\n\t\tSex\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nSelect1 sink(input(\n\t\tId as string,\n\t\tSales as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['join.csv'],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/salesjoinleft')]",
+				"[concat(variables('factoryId'), '/datasets/customerjoinright')]",
+				"[concat(variables('factoryId'), '/datasets/outputsink_DS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/mergedflow')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "WranglingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"name": "salesjoinleft",
+							"script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> salesjoinleft",
+							"dataset": {
+								"referenceName": "salesjoinleft",
+								"type": "DatasetReference"
+							}
+						},
+						{
+							"name": "customerjoinright",
+							"script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> customerjoinright",
+							"dataset": {
+								"referenceName": "customerjoinright",
+								"type": "DatasetReference"
+							}
+						}
+					],
+					"sinks": [],
+					"script": "section Section1;\r\nshared salesjoinleft = let\r\n  AdfDoc = AzureStorage.BlobContents(\"https://bkdfstorage.blob.core.windows.net/input/Sales_Join_left.csv\"),\r\n  Csv = Csv.Document(AdfDoc, [Delimiter = \",\", Encoding = TextEncoding.Utf8, QuoteStyle = QuoteStyle.Csv]),\r\n  PromotedHeaders = Table.PromoteHeaders(Csv, [PromoteAllScalars = true])\r\nin\r\n  PromotedHeaders;\r\nshared customerjoinright = let\r\n  AdfDoc = AzureStorage.BlobContents(\"https://bkdfstorage.blob.core.windows.net/input/customer_join_right.csv\"),\r\n  Csv = Csv.Document(AdfDoc, [Delimiter = \",\", Encoding = TextEncoding.Utf8, QuoteStyle = QuoteStyle.Csv]),\r\n  PromotedHeaders = Table.PromoteHeaders(Csv, [PromoteAllScalars = true])\r\nin\r\n  PromotedHeaders;\r\nshared UserQuery = let\r\n  Source = salesjoinleft,\r\n  #\"Merged queries\" = Table.NestedJoin(Source, {\"Cust_id\"}, customerjoinright, {\"Cust_id\"}, \"customerjoinright\", JoinKind.FullOuter),\r\n  #\"Expanded customerjoinright\" = Table.ExpandTableColumn(#\"Merged queries\", \"customerjoinright\", {\"Name\", \"Age\", \"Sex\"}, {\"customerjoinright.Name\", \"customerjoinright.Age\", \"customerjoinright.Sex\"}),\r\n  #\"Renamed columns\" = Table.RenameColumns(#\"Expanded customerjoinright\", {{\"customerjoinright.Name\", \"Customer_Name\"}, {\"customerjoinright.Age\", \"Customer_Age\"}, {\"customerjoinright.Sex\", \"Customer_sex\"}})\r\nin\r\n  #\"Renamed columns\";\r\n"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/salesjoinleft')]",
+				"[concat(variables('factoryId'), '/datasets/customerjoinright')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/wrang1')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "WranglingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"name": "salesjoinleft",
+							"script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> salesjoinleft",
+							"dataset": {
+								"referenceName": "salesjoinleft",
+								"type": "DatasetReference"
+							}
+						}
+					],
+					"sinks": [],
+					"script": "section Section1;\r\nshared salesjoinleft = let\r\n  AdfDoc = AzureStorage.BlobContents(\"https://bkdfstorage.blob.core.windows.net/input/Sales_Join_left.csv\"),\r\n  Csv = Csv.Document(AdfDoc, [Delimiter = \",\", Encoding = TextEncoding.Utf8, QuoteStyle = QuoteStyle.Csv]),\r\n  PromotedHeaders = Table.PromoteHeaders(Csv, [PromoteAllScalars = true])\r\nin\r\n  PromotedHeaders;\r\nshared UserQuery = let\r\n  Source = salesjoinleft,\r\n  #\"Changed column type\" = Table.TransformColumnTypes(Source, {{\"Sales\", type number}}),\r\n  #\"Removed columns\" = Table.RemoveColumns(#\"Changed column type\", {\"Row\"})\r\nin\r\n  #\"Removed columns\";\r\n"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/salesjoinleft')]"
+			]
+		}
+	]
+}
