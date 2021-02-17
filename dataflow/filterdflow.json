@@ -1,0 +1,32 @@
+{
+	"name": "filterdflow",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "input",
+						"type": "DatasetReference"
+					},
+					"name": "sourcecsv"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "outputsink_DS",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "Filtersalesyear"
+				}
+			],
+			"script": "source(output(\n\t\tCountry as string,\n\t\tYear as integer,\n\t\tProduct_Type as string,\n\t\tSales as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> sourcecsv\nsourcecsv filter(Year==2017) ~> Filtersalesyear\nFiltersalesyear sink(input(\n\t\tId as string,\n\t\tSales as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['customer result.csv'],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
+		}
+	}
+}

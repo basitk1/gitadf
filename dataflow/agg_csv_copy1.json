@@ -1,0 +1,32 @@
+{
+	"name": "agg_csv_copy1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "input",
+						"type": "DatasetReference"
+					},
+					"name": "sourcecsv"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "outputsink_DS",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "Aggregateresults"
+				}
+			],
+			"script": "source(output(\n\t\tCountry as string,\n\t\tYear as string,\n\t\tProduct_Type as string,\n\t\tSales as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> sourcecsv\nsourcecsv aggregate(groupBy(Country),\n\t{Total Sales} = sum(toInteger(Sales)),\n\t\t{Max Sales} = max(toInteger(Sales)),\n\t\t{Min Sales} = min(toInteger(Sales))) ~> Aggregateresults\nAggregateresults sink(input(\n\t\tId as string,\n\t\tSales as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['aggregate sales.csv'],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
+		}
+	}
+}

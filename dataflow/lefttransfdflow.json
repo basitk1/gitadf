@@ -1,0 +1,42 @@
+{
+	"name": "lefttransfdflow",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "salesjoinleft",
+						"type": "DatasetReference"
+					},
+					"name": "sourcesales"
+				},
+				{
+					"dataset": {
+						"referenceName": "customerjoinright",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "outputsink_DS",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "Joindata"
+				},
+				{
+					"name": "Select1"
+				}
+			],
+			"script": "source(output(\n\t\tRow as string,\n\t\tCountry as string,\n\t\tYear as integer,\n\t\tSales as integer,\n\t\tCust_id as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> sourcesales\nsource(output(\n\t\tCust_id as string,\n\t\tCountry as string,\n\t\tName as string,\n\t\tAge as integer,\n\t\tSex as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> source1\nsourcesales, source1 join(sourcesales@Cust_id == source1@Cust_id,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> Joindata\nJoindata select(mapColumn(\n\t\tCust_id = source1@Cust_id,\n\t\tName,\n\t\tCountry = sourcesales@Country,\n\t\tYear,\n\t\tSales,\n\t\tAge,\n\t\tSex\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nSelect1 sink(input(\n\t\tId as string,\n\t\tSales as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['join.csv'],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
+		}
+	}
+}

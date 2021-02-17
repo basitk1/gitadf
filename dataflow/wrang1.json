@@ -1,0 +1,20 @@
+{
+	"name": "wrang1",
+	"properties": {
+		"type": "WranglingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"name": "salesjoinleft",
+					"script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> salesjoinleft",
+					"dataset": {
+						"referenceName": "salesjoinleft",
+						"type": "DatasetReference"
+					}
+				}
+			],
+			"sinks": [],
+			"script": "section Section1;\r\nshared salesjoinleft = let\r\n  AdfDoc = AzureStorage.BlobContents(\"https://bkdfstorage.blob.core.windows.net/input/Sales_Join_left.csv\"),\r\n  Csv = Csv.Document(AdfDoc, [Delimiter = \",\", Encoding = TextEncoding.Utf8, QuoteStyle = QuoteStyle.Csv]),\r\n  PromotedHeaders = Table.PromoteHeaders(Csv, [PromoteAllScalars = true])\r\nin\r\n  PromotedHeaders;\r\nshared UserQuery = let\r\n  Source = salesjoinleft,\r\n  #\"Changed column type\" = Table.TransformColumnTypes(Source, {{\"Sales\", type number}}),\r\n  #\"Removed columns\" = Table.RemoveColumns(#\"Changed column type\", {\"Row\"})\r\nin\r\n  #\"Removed columns\";\r\n"
+		}
+	}
+}

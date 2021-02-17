@@ -1,0 +1,48 @@
+{
+	"name": "clonetranf",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "input",
+						"type": "DatasetReference"
+					},
+					"name": "sourcesalses"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "outputsink_DS",
+						"type": "DatasetReference"
+					},
+					"name": "sinkderived"
+				},
+				{
+					"dataset": {
+						"referenceName": "outputsink_DS",
+						"type": "DatasetReference"
+					},
+					"name": "sinksalessort"
+				}
+			],
+			"transformations": [
+				{
+					"name": "DerivedColumnsales"
+				},
+				{
+					"name": "Sort1"
+				},
+				{
+					"name": "Sort2"
+				},
+				{
+					"name": "Selectsales"
+				}
+			],
+			"script": "source(output(\n\t\tCountry as string,\n\t\tYear as string,\n\t\tProduct_Type as string,\n\t\tSales as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tpartitionBy('hash', 1)) ~> sourcesalses\nsourcesalses derive(year = toInteger(trim(right(Country,6),'()')),\n\t\tCountry = toString(left(Country,length(Country)-6))) ~> DerivedColumnsales\nSelectsales sort(asc(Country, true)) ~> Sort1\nDerivedColumnsales sort(asc(Sales, true)) ~> Sort2\nDerivedColumnsales select(mapColumn(\n\t\tyear = DerivedColumnsales@year,\n\t\tCountry,\n\t\t{year of sales} = Sales\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Selectsales\nSort1 sink(input(\n\t\tId as string,\n\t\tSales as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['selectsortbycountry.csv'],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sinkderived\nSort2 sink(input(\n\t\tId as string,\n\t\tSales as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['sortbysales'],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sinksalessort"
+		}
+	}
+}

@@ -1,0 +1,43 @@
+{
+	"name": "demowrang1",
+	"properties": {
+		"activities": [
+			{
+				"name": "wrang1",
+				"type": "ExecuteWranglingDataflow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "mergedflow",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"sinks": {
+						"UserQuery": {
+							"name": "Sinkoutputsink_DS",
+							"dataset": {
+								"referenceName": "outputsink_DS",
+								"type": "DatasetReference"
+							},
+							"script": "sink(input(\n\t\tId as string,\n\t\tSales as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['wrang1.csv'],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Sinkoutputsink_DS"
+						}
+					}
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2021-02-16T02:03:46Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

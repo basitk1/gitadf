@@ -1,0 +1,39 @@
+{
+	"name": "exittranfdflow",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "salesjoinleft",
+						"type": "DatasetReference"
+					},
+					"name": "sourceexist"
+				},
+				{
+					"dataset": {
+						"referenceName": "customerjoinright",
+						"type": "DatasetReference"
+					},
+					"name": "sourcerightcust"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "outputsink_DS",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "Exists1"
+				}
+			],
+			"script": "source(output(\n\t\tRow as string,\n\t\tCountry as string,\n\t\tYear as string,\n\t\tSales as string,\n\t\tCust_id as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> sourceexist\nsource(output(\n\t\tCust_id as string,\n\t\tCountry as string,\n\t\tName as string,\n\t\tAge as string,\n\t\tSex as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> sourcerightcust\nsourceexist, sourcerightcust exists(sourceexist@Cust_id == sourcerightcust@Cust_id,\n\tnegate:true,\n\tbroadcast: 'auto')~> Exists1\nExists1 sink(input(\n\t\tId as string,\n\t\tSales as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['exists.csv'],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
+		}
+	}
+}
